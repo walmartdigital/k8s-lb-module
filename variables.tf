@@ -24,6 +24,11 @@ variable "target" {
   default = "workers"
 }
 
+variable "sku" {
+  type = string
+  default = "Basic"
+}
+
 variable "lb_ports" {
   type    = map(list(string))
   default = {}

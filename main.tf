@@ -20,6 +20,7 @@ resource "azurerm_lb" "load_balancer" {
   name                = "${var.cluster_name}-${var.environment}-${var.target}-${var.name_suffix}-lb"
   location            = data.azurerm_resource_group.main.location
   resource_group_name = data.azurerm_resource_group.main.name
+  sku                 = var.sku
 
   frontend_ip_configuration {
     name                          = "${var.cluster_name}-${var.environment}-${var.target}-${var.name_suffix}-frontend"

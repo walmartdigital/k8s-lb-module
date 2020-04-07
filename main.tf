@@ -11,6 +11,7 @@ resource "azurerm_public_ip" "public_ip" {
   name                = "${var.cluster_name}-${var.environment}-${var.target}-${var.name_suffix}-pip"
   location            = data.azurerm_resource_group.main.location
   resource_group_name = data.azurerm_resource_group.main.name
+  sku                 = var.sku
   allocation_method   = "Static"
 
   tags = merge(var.default_tags, map("cluster", "${var.cluster_name}-${var.environment}-${var.name_suffix}"))

@@ -35,12 +35,12 @@ variable "lb_ports" {
 }
 
 variable "public_ips" {
-  type    = map(list(string))
+  type    = map(map(string))
   default = {}
 }
 
 variable "private_ips" {
-  type    = map(list(string))
+  type    = map(map(string))
   default = {}
 }
 

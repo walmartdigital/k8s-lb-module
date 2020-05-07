@@ -28,7 +28,7 @@ resource "azurerm_lb" "load_balancer" {
     for_each = var.public_ips
     content {
       name                          = "${var.cluster_name}-${var.environment}-${pub.value.target}-${var.name_suffix}-${pub.value.name}-frontend"
-      public_ip_address_id          = azurerm_public_ip.public_ip[index(azurerm_public_ip.public_ip.*.id, "${var.cluster_name}-${var.environment}-${pub.value.target}-${var.name_suffix}-${pub.value.name}-pip")].id
+      public_ip_address_id          = azurerm_public_ip.public_ip[index(azurerm_public_ip.public_ip.*.name, "${var.cluster_name}-${var.environment}-${pub.value.target}-${var.name_suffix}-${pub.value.name}-pip")].id
     }
 
   }

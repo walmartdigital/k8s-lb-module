@@ -25,7 +25,7 @@ resource "azurerm_lb" "load_balancer" {
 
   dynamic "frontend_ip_configuration" {
     iterator = pub
-    for_each = azurerm_public_ip.pip  
+    for_each = data.azurerm_public_ip.pip  
     content {
       name                          = "${pub.name}-frontend"
       public_ip_address_id          = join("", azurerm_public_ip.public_ip.*.id)
@@ -35,7 +35,7 @@ resource "azurerm_lb" "load_balancer" {
 
   dynamic "frontend_ip_configuration" {
     iterator = priv
-    for_each = azurerm_private_ip.pip  
+    for_each = var.private_ips  
     content {
       name                          = "${var.cluster_name}-${var.environment}-${priv.target}-${var.name_suffix}-${priv.name}-pip-frontend"
       private_ip_address_allocation = var.frontend_private_ip_address_allocation

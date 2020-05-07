@@ -25,10 +25,10 @@ resource "azurerm_lb" "load_balancer" {
 
   dynamic "frontend_ip_configuration" {
     iterator = pub
-    for_each = azurerm_public_ip.public_ip 
+    for_each = var.public_ips
     content {
-      name                          = "${pub.name}-frontend"
-      public_ip_address_id          = pub.id
+      name                          = "${var.cluster_name}-${var.environment}-${pub.target}-${var.name_suffix}-${pub.name}-frontend"
+      public_ip_address_id          = azurerm_public_ip.public_ip[index(azurerm_public_ip.public_ip.*.id, "${var.cluster_name}-${var.environment}-${pub.target}-${var.name_suffix}-${pub.name}-pip")].id
     }
 
   }
@@ -37,7 +37,7 @@ resource "azurerm_lb" "load_balancer" {
     iterator = priv
     for_each = var.private_ips  
     content {
-      name                          = "${var.cluster_name}-${var.environment}-${priv.target}-${var.name_suffix}-${priv.name}-pip-frontend"
+      name                          = "${var.cluster_name}-${var.environment}-${priv.target}-${var.name_suffix}-${priv.name}-frontend"
       private_ip_address_allocation = var.frontend_private_ip_address_allocation
       private_ip_address            = priv.address_allocation == "Static" ? priv.ip_address : ""
     }
@@ -61,7 +61,7 @@ resource "azurerm_lb_rule" "lb_rule" {
   protocol                       = values(var.lb_ports)[count.index][1]
   frontend_port                  = values(var.lb_ports)[count.index][0]
   backend_port                   = values(var.lb_ports)[count.index][2]
-  frontend_ip_configuration_name = "${var.cluster_name}-${var.environment}-${values(var.lb_ports)[count.index][5]}-${var.name_suffix}-${values(var.lb_ports)[count.index][6]}-pip-frontend"
+  frontend_ip_configuration_name = "${var.cluster_name}-${var.environment}-${values(var.lb_ports)[count.index][5]}-${var.name_suffix}-${values(var.lb_ports)[count.index][6]}-frontend"
   enable_floating_ip             = false
   backend_address_pool_id        = azurerm_lb_backend_address_pool.address_pool.id
   idle_timeout_in_minutes        = 5

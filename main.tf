@@ -27,8 +27,8 @@ resource "azurerm_lb" "load_balancer" {
     iterator = pub
     for_each = var.public_ips
     content {
-      name                          = "${var.cluster_name}-${var.environment}-${pub.target}-${var.name_suffix}-${pub.name}-frontend"
-      public_ip_address_id          = azurerm_public_ip.public_ip[index(azurerm_public_ip.public_ip.*.id, "${var.cluster_name}-${var.environment}-${pub.target}-${var.name_suffix}-${pub.name}-pip")].id
+      name                          = "${var.cluster_name}-${var.environment}-${pub.value.target}-${var.name_suffix}-${pub.value.name}-frontend"
+      public_ip_address_id          = azurerm_public_ip.public_ip[index(azurerm_public_ip.public_ip.*.id, "${var.cluster_name}-${var.environment}-${pub.value.target}-${var.name_suffix}-${pub.value.name}-pip")].id
     }
 
   }
@@ -37,9 +37,9 @@ resource "azurerm_lb" "load_balancer" {
     iterator = priv
     for_each = var.private_ips  
     content {
-      name                          = "${var.cluster_name}-${var.environment}-${priv.target}-${var.name_suffix}-${priv.name}-frontend"
+      name                          = "${var.cluster_name}-${var.environment}-${priv.value.target}-${var.name_suffix}-${priv.value.name}-frontend"
       private_ip_address_allocation = var.frontend_private_ip_address_allocation
-      private_ip_address            = priv.address_allocation == "Static" ? priv.ip_address : ""
+      private_ip_address            = priv.value.address_allocation == "Static" ? priv.value.ip_address : ""
     }
 
   }

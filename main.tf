@@ -7,8 +7,8 @@ data "azurerm_resource_group" "main" {
 }
 
 resource "azurerm_public_ip" "public_ip" {
-  count               = var.lb_type == "public" ? 1 : 0
-  name                = "${var.cluster_name}-${var.environment}-${var.target}-${var.name_suffix}-pip"
+  count               = length(var.public_ips)
+  name                = "${var.cluster_name}-${var.environment}-${values(var.public_ips)[count.index].target}-${var.name_suffix}-${values(var.public_ips)[count.index].name}-pip"
   location            = data.azurerm_resource_group.main.location
   resource_group_name = data.azurerm_resource_group.main.name
   sku                 = var.sku
@@ -23,12 +23,25 @@ resource "azurerm_lb" "load_balancer" {
   resource_group_name = data.azurerm_resource_group.main.name
   sku                 = var.sku
 
-  frontend_ip_configuration {
-    name                          = "${var.cluster_name}-${var.environment}-${var.target}-${var.name_suffix}-frontend"
-    public_ip_address_id          = var.lb_type == "public" ? join("", azurerm_public_ip.public_ip.*.id) : ""
-    subnet_id                     = var.subnet_id
-    private_ip_address_allocation = var.frontend_private_ip_address_allocation
-    private_ip_address            = var.frontend_private_ip_address_allocation == "Static" ? var.frontend_private_ip_address : ""
+  dynamic "frontend_ip_configuration" {
+    iterator = pub
+    for_each = azurerm_public_ip.pip  
+    content {
+      name                          = "${pub.name}-frontend"
+      public_ip_address_id          = join("", azurerm_public_ip.public_ip.*.id)
+    }
+
+  }
+
+  dynamic "frontend_ip_configuration" {
+    iterator = priv
+    for_each = azurerm_private_ip.pip  
+    content {
+      name                          = "${var.cluster_name}-${var.environment}-${priv.target}-${var.name_suffix}-${priv.name}-pip-frontend"
+      private_ip_address_allocation = var.frontend_private_ip_address_allocation
+      private_ip_address            = priv.address_allocation == "Static" ? priv.ip_address : ""
+    }
+
   }
 
   tags = merge(var.default_tags, map("cluster", "${var.cluster_name}-${var.environment}-${var.name_suffix}"))
@@ -48,7 +61,7 @@ resource "azurerm_lb_rule" "lb_rule" {
   protocol                       = values(var.lb_ports)[count.index][1]
   frontend_port                  = values(var.lb_ports)[count.index][0]
   backend_port                   = values(var.lb_ports)[count.index][2]
-  frontend_ip_configuration_name = "${var.cluster_name}-${var.environment}-${var.target}-${var.name_suffix}-frontend"
+  frontend_ip_configuration_name = "${var.cluster_name}-${var.environment}-${values(var.lb_ports)[count.index][5]}-${var.name_suffix}-${values(var.lb_ports)[count.index][6]}-pip-frontend"
   enable_floating_ip             = false
   backend_address_pool_id        = azurerm_lb_backend_address_pool.address_pool.id
   idle_timeout_in_minutes        = 5

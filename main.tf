@@ -25,10 +25,10 @@ resource "azurerm_lb" "load_balancer" {
 
   dynamic "frontend_ip_configuration" {
     iterator = pub
-    for_each = data.azurerm_public_ip.pip  
+    for_each = azurerm_public_ip.pip  
     content {
       name                          = "${pub.name}-frontend"
-      public_ip_address_id          = join("", azurerm_public_ip.public_ip.*.id)
+      public_ip_address_id          = pub.id
     }
 
   }

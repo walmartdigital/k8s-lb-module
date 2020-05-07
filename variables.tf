@@ -34,6 +34,16 @@ variable "lb_ports" {
   default = {}
 }
 
+variable "public_ips" {
+  type    = map(list(string))
+  default = {}
+}
+
+variable "private_ips" {
+  type    = map(list(string))
+  default = {}
+}
+
 variable "lb_probe_interval" {
   type    = string
   default = 5

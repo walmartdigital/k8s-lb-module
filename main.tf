@@ -25,7 +25,7 @@ resource "azurerm_lb" "load_balancer" {
 
   dynamic "frontend_ip_configuration" {
     iterator = pub
-    for_each = azurerm_public_ip.pip  
+    for_each = azurerm_public_ip.public_ip 
     content {
       name                          = "${pub.name}-frontend"
       public_ip_address_id          = pub.id

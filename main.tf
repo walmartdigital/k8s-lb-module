@@ -88,7 +88,7 @@ resource "azurerm_lb_rule" "lb_rule_public" {
   backend_address_pool_id        = azurerm_lb_backend_address_pool.address_pool_public.id
   idle_timeout_in_minutes        = 5
   probe_id                       = element(concat(azurerm_lb_probe.lb_probe.*.id, list("")), count.index)
-  depends_on                     = [azurerm_lb_probe.lb_probe]
+  depends_on                     = [azurerm_lb_probe.lb_probe_public]
 }
 
 resource "azurerm_lb_rule" "lb_rule_private" {
@@ -104,13 +104,13 @@ resource "azurerm_lb_rule" "lb_rule_private" {
   backend_address_pool_id        = azurerm_lb_backend_address_pool.address_pool_private.id
   idle_timeout_in_minutes        = 5
   probe_id                       = element(concat(azurerm_lb_probe.lb_probe.*.id, list("")), count.index)
-  depends_on                     = [azurerm_lb_probe.lb_probe]
+  depends_on                     = [azurerm_lb_probe.lb_probe_private]
 }
 
 resource "azurerm_lb_probe" "lb_probe_public" {
   count               = length(local.lb_ports_public)
   resource_group_name = data.azurerm_resource_group.main.name
-  loadbalancer_id     = azurerm_lb.load_balancer.id
+  loadbalancer_id     = azurerm_lb.load_balancer_public.id
   name                = element(keys(var.lb_ports), count.index)
   protocol            = local.lb_ports_public[4] != "" ? "http" : "Tcp"
   port                = local.lb_ports_public[3]
@@ -122,7 +122,7 @@ resource "azurerm_lb_probe" "lb_probe_public" {
 resource "azurerm_lb_probe" "lb_probe_private" {
   count               = length(local.lb_ports_private)
   resource_group_name = data.azurerm_resource_group.main.name
-  loadbalancer_id     = azurerm_lb.load_balancer.id
+  loadbalancer_id     = azurerm_lb.load_balancer_private.id
   name                = element(keys(var.lb_ports), count.index)
   protocol            = local.lb_ports_private[4] != "" ? "http" : "Tcp"
   port                = local.lb_ports_private[3]

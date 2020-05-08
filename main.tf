@@ -18,7 +18,7 @@ resource "azurerm_public_ip" "public_ip" {
 }
 
 resource "azurerm_lb" "load_balancer_public" {
-  name                = "${var.cluster_name}-${var.environment}-${var.target}-${var.name_suffix}-lb"
+  name                = "${var.cluster_name}-${var.environment}-${var.target}-${var.name_suffix}-lb-public"
   location            = data.azurerm_resource_group.main.location
   resource_group_name = data.azurerm_resource_group.main.name
   sku                 = var.sku
@@ -36,7 +36,7 @@ resource "azurerm_lb" "load_balancer_public" {
 }
 
 resource "azurerm_lb" "load_balancer_private" {
-  name                = "${var.cluster_name}-${var.environment}-${var.target}-${var.name_suffix}-lb"
+  name                = "${var.cluster_name}-${var.environment}-${var.target}-${var.name_suffix}-lb-private"
   location            = data.azurerm_resource_group.main.location
   resource_group_name = data.azurerm_resource_group.main.name
   sku                 = var.sku

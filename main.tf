@@ -68,11 +68,11 @@ resource "azurerm_lb_backend_address_pool" "address_pool_private" {
 }
 
 locals {
-  lb_ports_private = [for v in values(var.lb_ports): v if v.visibility == "private"]
+  lb_ports_private = [for v in var.lb_ports: v if v.visibility == "private"]
 }
 
 locals {
-  lb_ports_public = [for v in values(var.lb_ports): v if v.visibility == "public"]
+  lb_ports_public = [for v in var.lb_ports: v if v.visibility == "public"]
 }
 
 resource "azurerm_lb_rule" "lb_rule_public" {

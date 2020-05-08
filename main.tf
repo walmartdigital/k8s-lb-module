@@ -78,7 +78,7 @@ locals {
 resource "azurerm_lb_rule" "lb_rule_public" {
   count                          = length(local.lb_ports_public)
   resource_group_name            = data.azurerm_resource_group.main.name
-  loadbalancer_id                = azurerm_lb.load_balancer.id
+  loadbalancer_id                = azurerm_lb.load_balancer_public.id
   name                           = element(keys(var.lb_ports), count.index)
   protocol                       = local.lb_ports_public[1]
   frontend_port                  = local.lb_ports_public[0]
@@ -94,7 +94,7 @@ resource "azurerm_lb_rule" "lb_rule_public" {
 resource "azurerm_lb_rule" "lb_rule_private" {
   count                          = length(local.lb_ports_private)
   resource_group_name            = data.azurerm_resource_group.main.name
-  loadbalancer_id                = azurerm_lb.load_balancer.id
+  loadbalancer_id                = azurerm_lb.load_balancer_private.id
   name                           = element(keys(var.lb_ports), count.index)
   protocol                       = local.lb_ports_private[1]
   frontend_port                  = local.lb_ports_private[0]

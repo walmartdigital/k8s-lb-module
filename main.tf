@@ -87,7 +87,7 @@ resource "azurerm_lb_rule" "lb_rule_public" {
   enable_floating_ip             = false
   backend_address_pool_id        = azurerm_lb_backend_address_pool.address_pool_public.id
   idle_timeout_in_minutes        = 5
-  probe_id                       = element(concat(azurerm_lb_probe.lb_probe.*.id, list("")), count.index)
+  probe_id                       = element(concat(azurerm_lb_probe.lb_probe_public.*.id, list("")), count.index)
   depends_on                     = [azurerm_lb_probe.lb_probe_public]
 }
 
@@ -103,7 +103,7 @@ resource "azurerm_lb_rule" "lb_rule_private" {
   enable_floating_ip             = false
   backend_address_pool_id        = azurerm_lb_backend_address_pool.address_pool_private.id
   idle_timeout_in_minutes        = 5
-  probe_id                       = element(concat(azurerm_lb_probe.lb_probe.*.id, list("")), count.index)
+  probe_id                       = element(concat(azurerm_lb_probe.lb_probe_private.*.id, list("")), count.index)
   depends_on                     = [azurerm_lb_probe.lb_probe_private]
 }
 

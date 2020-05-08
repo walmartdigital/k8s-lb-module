@@ -29,12 +29,7 @@ variable "sku" {
   default = "Basic"
 }
 
-variable "lb_ports_public" {
-  type    = list(map(string))
-  default = []
-}
-
-variable "lb_ports_private" {
+variable "lb_ports" {
   type    = list(map(string))
   default = []
 }

@@ -85,7 +85,7 @@ resource "azurerm_lb_rule" "lb_rule_public" {
   backend_port                   = local.lb_ports_public[2]
   frontend_ip_configuration_name = "${var.cluster_name}-${var.environment}-${local.lb_ports_public[5]}-${var.name_suffix}-${local.lb_ports_public[6]}-frontend"
   enable_floating_ip             = false
-  backend_address_pool_id        = azurerm_lb_backend_address_pool.address_pool.id
+  backend_address_pool_id        = azurerm_lb_backend_address_pool.address_pool_public.id
   idle_timeout_in_minutes        = 5
   probe_id                       = element(concat(azurerm_lb_probe.lb_probe.*.id, list("")), count.index)
   depends_on                     = [azurerm_lb_probe.lb_probe]
@@ -101,7 +101,7 @@ resource "azurerm_lb_rule" "lb_rule_private" {
   backend_port                   = local.lb_ports_private[2]
   frontend_ip_configuration_name = "${var.cluster_name}-${var.environment}-${local.lb_ports_private[5]}-${var.name_suffix}-${local.lb_ports_private[6]}-frontend"
   enable_floating_ip             = false
-  backend_address_pool_id        = azurerm_lb_backend_address_pool.address_pool.id
+  backend_address_pool_id        = azurerm_lb_backend_address_pool.address_pool_private.id
   idle_timeout_in_minutes        = 5
   probe_id                       = element(concat(azurerm_lb_probe.lb_probe.*.id, list("")), count.index)
   depends_on                     = [azurerm_lb_probe.lb_probe]

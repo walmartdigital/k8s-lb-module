@@ -103,7 +103,7 @@ resource "azurerm_lb_probe" "lb_probe_public" {
   count               = length(var.lb_ports_public)
   resource_group_name = data.azurerm_resource_group.main.name
   loadbalancer_id     = azurerm_lb.load_balancer_public.id
-  name                = var.lb_ports[count.index].name
+  name                = var.lb_ports_public[count.index].name
   protocol            = var.lb_ports_public[count.index].health != "" ? "http" : "Tcp"
   port                = var.lb_ports_public[count.index].lb_rule_port_kube_dns_probe
   interval_in_seconds = var.lb_probe_interval
@@ -115,7 +115,7 @@ resource "azurerm_lb_probe" "lb_probe_private" {
   count               = length(var.lb_ports_private)
   resource_group_name = data.azurerm_resource_group.main.name
   loadbalancer_id     = azurerm_lb.load_balancer_private.id
-  name                = var.lb_ports[count.index].name
+  name                = var.lb_ports_private[count.index].name
   protocol            = var.lb_ports_private[count.index].health != "" ? "http" : "Tcp"
   port                = var.lb_ports_private[count.index].lb_rule_port_kube_dns_probe
   interval_in_seconds = var.lb_probe_interval

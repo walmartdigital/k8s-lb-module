@@ -30,7 +30,7 @@ variable "sku" {
 }
 
 variable "lb_ports" {
-  type    = map(list(string))
+  type    = list(map(string))
   default = {}
 }
 

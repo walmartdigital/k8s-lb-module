@@ -30,7 +30,6 @@ resource "azurerm_lb" "load_balancer" {
       name                          = "${var.cluster_name}-${var.environment}-${pub.value.target}-${var.name_suffix}-${pub.value.name}-frontend"
       public_ip_address_id          = azurerm_public_ip.public_ip[index(azurerm_public_ip.public_ip.*.name, "${var.cluster_name}-${var.environment}-${pub.value.target}-${var.name_suffix}-${pub.value.name}-pip")].id
     }
-
   }
 
   dynamic "frontend_ip_configuration" {
@@ -38,11 +37,10 @@ resource "azurerm_lb" "load_balancer" {
     for_each = var.private_ips  
     content {
       name                          = "${var.cluster_name}-${var.environment}-${priv.value.target}-${var.name_suffix}-${priv.value.name}-frontend"
-      private_ip_address_allocation = var.frontend_private_ip_address_allocation
+      private_ip_address_allocation = priv.value.address_allocation
       private_ip_address            = priv.value.address_allocation == "Static" ? priv.value.ip_address : ""
       subnet_id                     = var.subnet_id
     }
-
   }
 
   tags = merge(var.default_tags, map("cluster", "${var.cluster_name}-${var.environment}-${var.name_suffix}"))

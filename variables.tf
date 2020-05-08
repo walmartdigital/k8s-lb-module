@@ -31,7 +31,7 @@ variable "sku" {
 
 variable "lb_ports" {
   type    = list(map(string))
-  default = {}
+  default = []
 }
 
 variable "public_ips" {

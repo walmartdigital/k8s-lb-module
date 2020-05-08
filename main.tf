@@ -68,11 +68,11 @@ resource "azurerm_lb_backend_address_pool" "address_pool_private" {
 }
 
 locals {
-  lb_ports_private = [for v in values(var.lb_ports): v if v[7] == "private"]
+  lb_ports_private = [for v in values(var.lb_ports): v if v.visibility == "private"]
 }
 
 locals {
-  lb_ports_public = [for v in values(var.lb_ports): v if v[7] == "public"]
+  lb_ports_public = [for v in values(var.lb_ports): v if v.visbility == "public"]
 }
 
 resource "azurerm_lb_rule" "lb_rule_public" {
@@ -80,10 +80,10 @@ resource "azurerm_lb_rule" "lb_rule_public" {
   resource_group_name            = data.azurerm_resource_group.main.name
   loadbalancer_id                = azurerm_lb.load_balancer_public.id
   name                           = element(keys(var.lb_ports), count.index)
-  protocol                       = local.lb_ports_public[count.index][1]
-  frontend_port                  = local.lb_ports_public[count.index][0]
-  backend_port                   = local.lb_ports_public[count.index][2]
-  frontend_ip_configuration_name = "${var.cluster_name}-${var.environment}-${local.lb_ports_public[count.index][5]}-${var.name_suffix}-${local.lb_ports_public[count.index][6]}-frontend"
+  protocol                       = local.lb_ports_public[count.index].protocol
+  frontend_port                  = local.lb_ports_public[count.index].port
+  backend_port                   = local.lb_ports_public[count.index].lb_rule_port_kube_dns
+  frontend_ip_configuration_name = "${var.cluster_name}-${var.environment}-${local.lb_ports_public[count.index].target}-${var.name_suffix}-${local.lb_ports_public[count.index].name}-frontend"
   enable_floating_ip             = false
   backend_address_pool_id        = azurerm_lb_backend_address_pool.address_pool_public.id
   idle_timeout_in_minutes        = 5
@@ -96,10 +96,10 @@ resource "azurerm_lb_rule" "lb_rule_private" {
   resource_group_name            = data.azurerm_resource_group.main.name
   loadbalancer_id                = azurerm_lb.load_balancer_private.id
   name                           = element(keys(var.lb_ports), count.index)
-  protocol                       = local.lb_ports_private[count.index][1]
-  frontend_port                  = local.lb_ports_private[count.index][0]
-  backend_port                   = local.lb_ports_private[count.index][2]
-  frontend_ip_configuration_name = "${var.cluster_name}-${var.environment}-${local.lb_ports_private[count.index][5]}-${var.name_suffix}-${local.lb_ports_private[count.index][6]}-frontend"
+  protocol                       = local.lb_ports_private[count.index].protocol
+  frontend_port                  = local.lb_ports_private[count.index].port
+  backend_port                   = local.lb_ports_private[count.index].lb_rule_port_kube_dns
+  frontend_ip_configuration_name = "${var.cluster_name}-${var.environment}-${local.lb_ports_private[count.index].target}-${var.name_suffix}-${local.lb_ports_private[count.index].name}-frontend"
   enable_floating_ip             = false
   backend_address_pool_id        = azurerm_lb_backend_address_pool.address_pool_private.id
   idle_timeout_in_minutes        = 5
@@ -112,11 +112,11 @@ resource "azurerm_lb_probe" "lb_probe_public" {
   resource_group_name = data.azurerm_resource_group.main.name
   loadbalancer_id     = azurerm_lb.load_balancer_public.id
   name                = element(keys(var.lb_ports), count.index)
-  protocol            = local.lb_ports_public[count.index][4] != "" ? "http" : "Tcp"
-  port                = local.lb_ports_public[count.index][3]
+  protocol            = local.lb_ports_public[count.index].health != "" ? "http" : "Tcp"
+  port                = local.lb_ports_public[count.index].lb_rule_port_kube_dns_probe
   interval_in_seconds = var.lb_probe_interval
   number_of_probes    = var.lb_probe_unhealthy_threshold
-  request_path        = local.lb_ports_public[count.index][4] != "" ? local.lb_ports_public[count.index][4] : ""
+  request_path        = local.lb_ports_public[count.index].health != "" ? local.lb_ports_public[count.index].health : ""
 }
 
 resource "azurerm_lb_probe" "lb_probe_private" {
@@ -124,9 +124,9 @@ resource "azurerm_lb_probe" "lb_probe_private" {
   resource_group_name = data.azurerm_resource_group.main.name
   loadbalancer_id     = azurerm_lb.load_balancer_private.id
   name                = element(keys(var.lb_ports), count.index)
-  protocol            = local.lb_ports_private[count.index][4] != "" ? "http" : "Tcp"
-  port                = local.lb_ports_private[count.index][3]
+  protocol            = local.lb_ports_private[count.index].health != "" ? "http" : "Tcp"
+  port                = local.lb_ports_private[count.index].lb_rule_port_kube_dns_probe
   interval_in_seconds = var.lb_probe_interval
   number_of_probes    = var.lb_probe_unhealthy_threshold
-  request_path        = local.lb_ports_private[count.index][4] != "" ? local.lb_ports_private[count.index][4] : ""
+  request_path        = local.lb_ports_private[count.index].health != "" ? local.lb_ports_private[count.index].health : ""
 }

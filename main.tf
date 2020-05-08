@@ -72,7 +72,7 @@ locals {
 }
 
 locals {
-  lb_ports_public = [for v in values(var.lb_ports): v if v.visbility == "public"]
+  lb_ports_public = [for v in values(var.lb_ports): v if v.visibility == "public"]
 }
 
 resource "azurerm_lb_rule" "lb_rule_public" {

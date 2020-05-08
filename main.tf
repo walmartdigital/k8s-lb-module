@@ -40,6 +40,7 @@ resource "azurerm_lb" "load_balancer" {
       name                          = "${var.cluster_name}-${var.environment}-${priv.value.target}-${var.name_suffix}-${priv.value.name}-frontend"
       private_ip_address_allocation = var.frontend_private_ip_address_allocation
       private_ip_address            = priv.value.address_allocation == "Static" ? priv.value.ip_address : ""
+      subnet_id                     = var.subnet_id
     }
 
   }

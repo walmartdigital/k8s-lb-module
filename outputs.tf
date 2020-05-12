@@ -3,9 +3,13 @@ output "load_balancer_public_ip" {
 }
 
 output "load_balancer_private_ip" {
-  value = azurerm_lb.load_balancer.private_ip_address
+  value = azurerm_lb.load_balancer_private.private_ip_address
 }
 
-output "lb_address_pool_id" {
-  value = azurerm_lb_backend_address_pool.address_pool.id
+output "lb_address_pool_id_public" {
+  value = azurerm_lb_backend_address_pool.address_pool_public.id
+}
+
+output "lb_address_pool_id_private" {
+  value = azurerm_lb_backend_address_pool.address_pool_private.id
 }

@@ -25,10 +25,10 @@ resource "azurerm_lb" "load_balancer_public" {
 
   dynamic "frontend_ip_configuration" {
     iterator = pub
-    for_each = var.public_ips
+    for_each = azurerm_public_ip.public_ip
     content {
-      name                          = "${var.cluster_name}-${var.environment}-${pub.value.target}-${var.name_suffix}-${pub.value.name}-frontend"
-      public_ip_address_id          = azurerm_public_ip.public_ip[index(azurerm_public_ip.public_ip.*.name, "${var.cluster_name}-${var.environment}-${pub.value.target}-${var.name_suffix}-${pub.value.name}-pip")].id
+      name                          = "${pub.name}-frontend"
+      public_ip_address_id          = pub.id
     }
   }
 
@@ -45,7 +45,7 @@ resource "azurerm_lb" "load_balancer_private" {
     iterator = priv
     for_each = var.private_ips  
     content {
-      name                          = "${var.cluster_name}-${var.environment}-${priv.value.target}-${var.name_suffix}-${priv.value.name}-frontend"
+      name                          = "${var.cluster_name}-${var.environment}-${priv.value.target}-${var.name_suffix}-${priv.value.name}-pip-frontend"
       private_ip_address_allocation = priv.value.address_allocation
       private_ip_address            = priv.value.address_allocation == "Static" ? priv.value.ip_address : ""
       subnet_id                     = var.subnet_id

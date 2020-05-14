@@ -27,8 +27,8 @@ resource "azurerm_lb" "load_balancer_public" {
     iterator = pub
     for_each = azurerm_public_ip.public_ip
     content {
-      name                          = "${pub.name}-frontend"
-      public_ip_address_id          = pub.id
+      name                          = "${pub.key}-frontend"
+      public_ip_address_id          = pub.value.id
     }
   }
 

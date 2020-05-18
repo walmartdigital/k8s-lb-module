@@ -18,6 +18,7 @@ resource "azurerm_public_ip" "public_ip" {
 
   lifecycle {
     ignore_changes = all
+    prevent_destroy = true
   }
 }
 
@@ -40,6 +41,7 @@ resource "azurerm_lb" "load_balancer_public" {
 
   lifecycle {
     ignore_changes = all
+    prevent_destroy = true
   }
 }
 
@@ -64,6 +66,7 @@ resource "azurerm_lb" "load_balancer_private" {
 
   lifecycle {
     ignore_changes = all
+    prevent_destroy = true
   }
 }
 
@@ -74,6 +77,7 @@ resource "azurerm_lb_backend_address_pool" "address_pool_public" {
 
   lifecycle {
     ignore_changes = all
+    prevent_destroy = true
   }
 }
 
@@ -84,6 +88,7 @@ resource "azurerm_lb_backend_address_pool" "address_pool_private" {
 
   lifecycle {
     ignore_changes = all
+    prevent_destroy = true
   }
 }
 
@@ -112,6 +117,7 @@ resource "azurerm_lb_rule" "lb_rule_public" {
 
   lifecycle {
     ignore_changes = all
+    prevent_destroy = true
   }
 }
 
@@ -132,6 +138,7 @@ resource "azurerm_lb_rule" "lb_rule_private" {
 
   lifecycle {
     ignore_changes = all
+    prevent_destroy = true
   }
 }
 
@@ -148,6 +155,7 @@ resource "azurerm_lb_probe" "lb_probe_public" {
 
   lifecycle {
     ignore_changes = all
+    prevent_destroy = true
   }
 }
 
@@ -164,5 +172,6 @@ resource "azurerm_lb_probe" "lb_probe_private" {
 
   lifecycle {
     ignore_changes = all
+    prevent_destroy = true
   }
 }

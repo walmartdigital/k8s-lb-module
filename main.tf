@@ -45,7 +45,7 @@ resource "azurerm_lb" "load_balancer_private" {
     iterator = priv
     for_each = var.private_ips  
     content {
-      name                          = "${var.cluster_name}-${var.environment}-${priv.value.target}-${var.name_suffix}-${priv.value.name}-pip-frontend"
+      name                          = "${var.cluster_name}-${var.environment}-${priv.value.target}-${var.name_suffix}-${priv.value.name}-ip-frontend"
       private_ip_address_allocation = priv.value.address_allocation
       private_ip_address            = priv.value.address_allocation == "Static" ? priv.value.ip_address : ""
       subnet_id                     = var.subnet_id
@@ -99,7 +99,7 @@ resource "azurerm_lb_rule" "lb_rule_private" {
   protocol                       = local.lb_ports_private[count.index].protocol
   frontend_port                  = local.lb_ports_private[count.index].port
   backend_port                   = local.lb_ports_private[count.index].lb_rule_port_kube_dns
-  frontend_ip_configuration_name = "${var.cluster_name}-${var.environment}-${local.lb_ports_private[count.index].target}-${var.name_suffix}-${local.lb_ports_private[count.index].frontend}-pip-frontend"
+  frontend_ip_configuration_name = "${var.cluster_name}-${var.environment}-${local.lb_ports_private[count.index].target}-${var.name_suffix}-${local.lb_ports_private[count.index].frontend}-ip-frontend"
   enable_floating_ip             = false
   backend_address_pool_id        = azurerm_lb_backend_address_pool.address_pool_private.id
   idle_timeout_in_minutes        = 5

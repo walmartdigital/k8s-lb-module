@@ -15,10 +15,6 @@ resource "azurerm_public_ip" "public_ip" {
   allocation_method   = "Static"
 
   tags = merge(var.default_tags, map("cluster", "${var.cluster_name}-${var.environment}-${var.name_suffix}"))
-
-  lifecycle {
-    ignore_changes = local.ignore_changes
-  }
 }
 
 resource "random_id" "public_ip" {

@@ -28,7 +28,7 @@ resource "random_id" "public_ip" {
     asg_id = "${ azurerm_public_ip.public_ip.id }"
   }
   lifecycle {
-    prevent_destroy = [ all ]
+    ignore_changes = [ all ]
   }
 }
 

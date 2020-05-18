@@ -18,10 +18,10 @@ resource "azurerm_public_ip" "public_ip" {
 }
 
 resource "random_id" "public_ip" {
-  count = var.ignore_changes ? 1 : 0
+  count = var.ignore_changes ? length(azurerm_public_ip.public_ip) : 0
   byte_length = 8
   keepers = {
-    asg_id = "${ azurerm_public_ip.public_ip.id }"
+    resource_id = "${ azurerm_public_ip.public_ip[count.index].id }"
   }
   lifecycle {
     ignore_changes = [ all ]

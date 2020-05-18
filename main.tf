@@ -6,6 +6,10 @@ data "azurerm_resource_group" "main" {
   name = var.resource_group
 }
 
+locals {
+  ignore_changes = var.ignore_changes ? [ all ] : []
+}
+
 resource "azurerm_public_ip" "public_ip" {
   count               = length(var.public_ips)
   name                = "${var.cluster_name}-${var.environment}-${values(var.public_ips)[count.index].target}-${var.name_suffix}-${values(var.public_ips)[count.index].name}-pip"
@@ -17,7 +21,7 @@ resource "azurerm_public_ip" "public_ip" {
   tags = merge(var.default_tags, map("cluster", "${var.cluster_name}-${var.environment}-${var.name_suffix}"))
 
   lifecycle {
-    ignore_changes = var.ignore_changes
+    ignore_changes = local.ignore_changes
   }
 }
 
@@ -39,7 +43,7 @@ resource "azurerm_lb" "load_balancer_public" {
   tags = merge(var.default_tags, map("cluster", "${var.cluster_name}-${var.environment}-${var.name_suffix}"))
 
   lifecycle {
-    ignore_changes = var.ignore_changes
+    ignore_changes = local.ignore_changes
   }
 }
 
@@ -63,7 +67,7 @@ resource "azurerm_lb" "load_balancer_private" {
   tags = merge(var.default_tags, map("cluster", "${var.cluster_name}-${var.environment}-${var.name_suffix}"))
 
   lifecycle {
-    ignore_changes = var.ignore_changes
+    ignore_changes = local.ignore_changes
   }
 }
 
@@ -73,7 +77,7 @@ resource "azurerm_lb_backend_address_pool" "address_pool_public" {
   loadbalancer_id     = azurerm_lb.load_balancer_public.id
 
   lifecycle {
-    ignore_changes = var.ignore_changes
+    ignore_changes = local.ignore_changes
   }
 }
 
@@ -83,7 +87,7 @@ resource "azurerm_lb_backend_address_pool" "address_pool_private" {
   loadbalancer_id     = azurerm_lb.load_balancer_private.id
 
   lifecycle {
-    ignore_changes = var.ignore_changes
+    ignore_changes = local.ignore_changes
   }
 }
 
@@ -111,7 +115,7 @@ resource "azurerm_lb_rule" "lb_rule_public" {
   depends_on                     = [azurerm_lb_probe.lb_probe_public]
 
   lifecycle {
-    ignore_changes = var.ignore_changes
+    ignore_changes = local.ignore_changes
   }
 }
 
@@ -131,7 +135,7 @@ resource "azurerm_lb_rule" "lb_rule_private" {
   depends_on                     = [azurerm_lb_probe.lb_probe_private]
 
   lifecycle {
-    ignore_changes = var.ignore_changes
+    ignore_changes = local.ignore_changes
   }
 }
 
@@ -147,7 +151,7 @@ resource "azurerm_lb_probe" "lb_probe_public" {
   request_path        = local.lb_ports_public[count.index].health != "" ? local.lb_ports_public[count.index].health : ""
 
   lifecycle {
-    ignore_changes = var.ignore_changes
+    ignore_changes = local.ignore_changes
   }
 }
 
@@ -163,6 +167,6 @@ resource "azurerm_lb_probe" "lb_probe_private" {
   request_path        = local.lb_ports_private[count.index].health != "" ? local.lb_ports_private[count.index].health : ""
 
   lifecycle {
-    ignore_changes = var.ignore_changes
+    ignore_changes = local.ignore_changes
   }
 }

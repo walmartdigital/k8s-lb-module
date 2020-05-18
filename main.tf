@@ -70,10 +70,6 @@ resource "azurerm_lb_backend_address_pool" "address_pool_public" {
   name                = "${var.cluster_name}-${var.environment}-${var.target}-${var.name_suffix}-addresspool"
   resource_group_name = data.azurerm_resource_group.main.name
   loadbalancer_id     = azurerm_lb.load_balancer_public.id
-
-  lifecycle {
-    ignore_changes = local.ignore_changes
-  }
 }
 
 resource "azurerm_lb_backend_address_pool" "address_pool_private" {

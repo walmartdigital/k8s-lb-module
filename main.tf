@@ -15,6 +15,10 @@ resource "azurerm_public_ip" "public_ip" {
   allocation_method   = "Static"
 
   tags = merge(var.default_tags, map("cluster", "${var.cluster_name}-${var.environment}-${var.name_suffix}"))
+
+  lifecycle {
+    ignore_changes = var.ignore_changes
+  }
 }
 
 resource "azurerm_lb" "load_balancer_public" {
@@ -33,6 +37,10 @@ resource "azurerm_lb" "load_balancer_public" {
   }
 
   tags = merge(var.default_tags, map("cluster", "${var.cluster_name}-${var.environment}-${var.name_suffix}"))
+
+  lifecycle {
+    ignore_changes = var.ignore_changes
+  }
 }
 
 resource "azurerm_lb" "load_balancer_private" {
@@ -53,18 +61,30 @@ resource "azurerm_lb" "load_balancer_private" {
   }
 
   tags = merge(var.default_tags, map("cluster", "${var.cluster_name}-${var.environment}-${var.name_suffix}"))
+
+  lifecycle {
+    ignore_changes = var.ignore_changes
+  }
 }
 
 resource "azurerm_lb_backend_address_pool" "address_pool_public" {
   name                = "${var.cluster_name}-${var.environment}-${var.target}-${var.name_suffix}-addresspool"
   resource_group_name = data.azurerm_resource_group.main.name
   loadbalancer_id     = azurerm_lb.load_balancer_public.id
+
+  lifecycle {
+    ignore_changes = var.ignore_changes
+  }
 }
 
 resource "azurerm_lb_backend_address_pool" "address_pool_private" {
   name                = "${var.cluster_name}-${var.environment}-${var.target}-${var.name_suffix}-addresspool"
   resource_group_name = data.azurerm_resource_group.main.name
   loadbalancer_id     = azurerm_lb.load_balancer_private.id
+
+  lifecycle {
+    ignore_changes = var.ignore_changes
+  }
 }
 
 locals {
@@ -89,6 +109,10 @@ resource "azurerm_lb_rule" "lb_rule_public" {
   idle_timeout_in_minutes        = 5
   probe_id                       = element(concat(azurerm_lb_probe.lb_probe_public.*.id, list("")), count.index)
   depends_on                     = [azurerm_lb_probe.lb_probe_public]
+
+  lifecycle {
+    ignore_changes = var.ignore_changes
+  }
 }
 
 resource "azurerm_lb_rule" "lb_rule_private" {
@@ -105,6 +129,10 @@ resource "azurerm_lb_rule" "lb_rule_private" {
   idle_timeout_in_minutes        = 5
   probe_id                       = element(concat(azurerm_lb_probe.lb_probe_private.*.id, list("")), count.index)
   depends_on                     = [azurerm_lb_probe.lb_probe_private]
+
+  lifecycle {
+    ignore_changes = var.ignore_changes
+  }
 }
 
 resource "azurerm_lb_probe" "lb_probe_public" {
@@ -117,6 +145,10 @@ resource "azurerm_lb_probe" "lb_probe_public" {
   interval_in_seconds = var.lb_probe_interval
   number_of_probes    = var.lb_probe_unhealthy_threshold
   request_path        = local.lb_ports_public[count.index].health != "" ? local.lb_ports_public[count.index].health : ""
+
+  lifecycle {
+    ignore_changes = var.ignore_changes
+  }
 }
 
 resource "azurerm_lb_probe" "lb_probe_private" {
@@ -129,4 +161,8 @@ resource "azurerm_lb_probe" "lb_probe_private" {
   interval_in_seconds = var.lb_probe_interval
   number_of_probes    = var.lb_probe_unhealthy_threshold
   request_path        = local.lb_ports_private[count.index].health != "" ? local.lb_ports_private[count.index].health : ""
+
+  lifecycle {
+    ignore_changes = var.ignore_changes
+  }
 }

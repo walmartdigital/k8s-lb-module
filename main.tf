@@ -15,14 +15,7 @@ resource "azurerm_public_ip" "public_ip" {
   allocation_method   = "Static"
 
   tags = merge(var.default_tags, map("cluster", "${var.cluster_name}-${var.environment}-${var.name_suffix}"))
-}
 
-resource "random_id" "public_ip" {
-  count = var.ignore_changes ? length(azurerm_public_ip.public_ip) : 0
-  byte_length = 8
-  keepers = {
-    resource_id = "${ azurerm_public_ip.public_ip[count.index].id }"
-  }
   lifecycle {
     ignore_changes = all
   }
@@ -36,14 +29,18 @@ resource "azurerm_lb" "load_balancer_public" {
 
   dynamic "frontend_ip_configuration" {
     iterator = pub
-    for_each = azurerm_public_ip.public_ip
+    for_each = var.public_ips
     content {
-      name                          = "${pub.key}-frontend"
-      public_ip_address_id          = pub.value.id
+      name                          = "${var.cluster_name}-${var.environment}-${pub.value.target}-${var.name_suffix}-${pub.value.name}-frontend"
+      public_ip_address_id          = azurerm_public_ip.public_ip[index(azurerm_public_ip.public_ip.*.name, "${var.cluster_name}-${var.environment}-${pub.value.target}-${var.name_suffix}-${pub.value.name}-pip")].id
     }
   }
 
   tags = merge(var.default_tags, map("cluster", "${var.cluster_name}-${var.environment}-${var.name_suffix}"))
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 resource "azurerm_lb" "load_balancer_private" {
@@ -56,7 +53,7 @@ resource "azurerm_lb" "load_balancer_private" {
     iterator = priv
     for_each = var.private_ips  
     content {
-      name                          = "${var.cluster_name}-${var.environment}-${priv.value.target}-${var.name_suffix}-${priv.value.name}-pip-frontend"
+      name                          = "${var.cluster_name}-${var.environment}-${priv.value.target}-${var.name_suffix}-${priv.value.name}-frontend"
       private_ip_address_allocation = priv.value.address_allocation
       private_ip_address            = priv.value.address_allocation == "Static" ? priv.value.ip_address : ""
       subnet_id                     = var.subnet_id
@@ -64,18 +61,30 @@ resource "azurerm_lb" "load_balancer_private" {
   }
 
   tags = merge(var.default_tags, map("cluster", "${var.cluster_name}-${var.environment}-${var.name_suffix}"))
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 resource "azurerm_lb_backend_address_pool" "address_pool_public" {
   name                = "${var.cluster_name}-${var.environment}-${var.target}-${var.name_suffix}-addresspool"
   resource_group_name = data.azurerm_resource_group.main.name
   loadbalancer_id     = azurerm_lb.load_balancer_public.id
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 resource "azurerm_lb_backend_address_pool" "address_pool_private" {
   name                = "${var.cluster_name}-${var.environment}-${var.target}-${var.name_suffix}-addresspool"
   resource_group_name = data.azurerm_resource_group.main.name
   loadbalancer_id     = azurerm_lb.load_balancer_private.id
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 locals {
@@ -100,6 +109,10 @@ resource "azurerm_lb_rule" "lb_rule_public" {
   idle_timeout_in_minutes        = 5
   probe_id                       = element(concat(azurerm_lb_probe.lb_probe_public.*.id, list("")), count.index)
   depends_on                     = [azurerm_lb_probe.lb_probe_public]
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 resource "azurerm_lb_rule" "lb_rule_private" {
@@ -116,6 +129,10 @@ resource "azurerm_lb_rule" "lb_rule_private" {
   idle_timeout_in_minutes        = 5
   probe_id                       = element(concat(azurerm_lb_probe.lb_probe_private.*.id, list("")), count.index)
   depends_on                     = [azurerm_lb_probe.lb_probe_private]
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 resource "azurerm_lb_probe" "lb_probe_public" {
@@ -128,6 +145,10 @@ resource "azurerm_lb_probe" "lb_probe_public" {
   interval_in_seconds = var.lb_probe_interval
   number_of_probes    = var.lb_probe_unhealthy_threshold
   request_path        = local.lb_ports_public[count.index].health != "" ? local.lb_ports_public[count.index].health : ""
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 resource "azurerm_lb_probe" "lb_probe_private" {
@@ -140,4 +161,8 @@ resource "azurerm_lb_probe" "lb_probe_private" {
   interval_in_seconds = var.lb_probe_interval
   number_of_probes    = var.lb_probe_unhealthy_threshold
   request_path        = local.lb_ports_private[count.index].health != "" ? local.lb_ports_private[count.index].health : ""
+
+  lifecycle {
+    ignore_changes = all
+  }
 }

@@ -1,8 +1,3 @@
-variable "ignore_changes" {
-  type = bool
-  default = false
-}
-
 variable "resource_group" {
   type = string
 }

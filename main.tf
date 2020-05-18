@@ -99,7 +99,7 @@ resource "azurerm_lb_rule" "lb_rule_private" {
   protocol                       = local.lb_ports_private[count.index].protocol
   frontend_port                  = local.lb_ports_private[count.index].port
   backend_port                   = local.lb_ports_private[count.index].lb_rule_port_kube_dns
-  frontend_ip_configuration_name = "${var.cluster_name}-${var.environment}-${local.lb_ports_private[count.index].target}-${var.name_suffix}-${local.lb_ports_private[count.index].frontend}-frontend"
+  frontend_ip_configuration_name = "${var.cluster_name}-${var.environment}-${local.lb_ports_private[count.index].target}-${var.name_suffix}-${local.lb_ports_private[count.index].frontend}-pip-frontend"
   enable_floating_ip             = false
   backend_address_pool_id        = azurerm_lb_backend_address_pool.address_pool_private.id
   idle_timeout_in_minutes        = 5

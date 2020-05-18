@@ -24,7 +24,7 @@ resource "random_id" "public_ip" {
     resource_id = "${ azurerm_public_ip.public_ip[count.index].id }"
   }
   lifecycle {
-    ignore_changes = [ all ]
+    ignore_changes = all
   }
 }
 

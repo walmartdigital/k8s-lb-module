@@ -83,13 +83,12 @@ resource "azurerm_lb_rule" "lb_rule_public" {
   protocol                       = local.lb_ports_public[count.index].protocol
   frontend_port                  = local.lb_ports_public[count.index].port
   backend_port                   = local.lb_ports_public[count.index].lb_rule_port_kube_dns
-  frontend_ip_configuration_name = "${var.cluster_name}-${var.environment}-${local.lb_ports_public[count.index].target}-${var.name_suffix}-${local.lb_ports_public[count.index].frontend}-pip-frontend"
+  frontend_ip_configuration_name = keys(azurerm_public_ip.public_ip)[0]//"${var.cluster_name}-${var.environment}-${local.lb_ports_public[count.index].target}-${var.name_suffix}-${local.lb_ports_public[count.index].frontend}-pip-frontend"
   enable_floating_ip             = false
   backend_address_pool_id        = azurerm_lb_backend_address_pool.address_pool_public.id
   idle_timeout_in_minutes        = 5
   probe_id                       = element(concat(azurerm_lb_probe.lb_probe_public.*.id, list("")), count.index)
   depends_on                     = [azurerm_public_ip.public_ip[0], azurerm_lb_probe.lb_probe_public]
-  dummy                          = azurerm_public_ip.public_ip.*
 }
 
 resource "azurerm_lb_rule" "lb_rule_private" {

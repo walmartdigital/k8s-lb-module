@@ -88,7 +88,7 @@ resource "azurerm_lb_rule" "lb_rule_public" {
   backend_address_pool_id        = azurerm_lb_backend_address_pool.address_pool_public.id
   idle_timeout_in_minutes        = 5
   probe_id                       = element(concat(azurerm_lb_probe.lb_probe_public.*.id, list("")), count.index)
-  depends_on                     = [azurerm_public_ip.public_ip, azurerm_lb_probe.lb_probe_public]
+  depends_on                     = [azurerm_public_ip.public_ip[0], azurerm_lb_probe.lb_probe_public]
 }
 
 resource "azurerm_lb_rule" "lb_rule_private" {

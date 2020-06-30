@@ -7,7 +7,7 @@ output "load_balancer_private_ip" {
 }
 
 output "lb_address_pool_id_public" {
-  value = "${length(azurerm_lb_backend_address_pool.address_pool_public) > 0 ? azurerm_lb_backend_address_pool.address_pool_public[0].id : ''}"
+  value = "${length(azurerm_lb_backend_address_pool.address_pool_public) > 0 ? azurerm_lb_backend_address_pool.address_pool_public[0].id : null}"
 }
 
 output "lb_address_pool_id_private" {

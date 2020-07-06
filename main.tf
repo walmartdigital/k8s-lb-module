@@ -43,7 +43,7 @@ resource "azurerm_lb" "load_balancer_private" {
 
   dynamic "frontend_ip_configuration" {
     iterator = priv
-    for_each = var.private_ips  
+    for_each = var.private_ips
     content {
       name                          = "${var.cluster_name}-${var.environment}-${priv.value.target}-${var.name_suffix}-${priv.value.name}-ip-frontend"
       private_ip_address_allocation = priv.value.address_allocation
@@ -111,7 +111,7 @@ resource "azurerm_lb_probe" "lb_probe_public" {
   count               = length(local.lb_ports_public)
   resource_group_name = data.azurerm_resource_group.main.name
   loadbalancer_id     = azurerm_lb.load_balancer_public.id
-  name                = var.lb_ports[count.index].name
+  name                = local.lb_ports_public[count.index].name
   protocol            = local.lb_ports_public[count.index].health != "" ? "http" : "Tcp"
   port                = local.lb_ports_public[count.index].lb_rule_port_kube_dns_probe
   interval_in_seconds = var.lb_probe_interval
@@ -123,7 +123,7 @@ resource "azurerm_lb_probe" "lb_probe_private" {
   count               = length(local.lb_ports_private)
   resource_group_name = data.azurerm_resource_group.main.name
   loadbalancer_id     = azurerm_lb.load_balancer_private.id
-  name                = var.lb_ports[count.index].name
+  name                = local.lb_ports_private[count.index].name
   protocol            = local.lb_ports_private[count.index].health != "" ? "http" : "Tcp"
   port                = local.lb_ports_private[count.index].lb_rule_port_kube_dns_probe
   interval_in_seconds = var.lb_probe_interval
